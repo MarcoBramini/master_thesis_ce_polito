@@ -1,0 +1,12 @@
+2023-08-17 23:18:57,860 - main - INFO - Initial parameters: {'tau_mem': 0.074, 'tau_syn': 0.061}
+2023-08-17 23:19:00,893 - main - INFO - Loaded 19798 events from file ../data/4bit_spikeset_PHASE_full.npy
+2023-08-17 23:19:00,952 - main - INFO - Generated events partitions: train(11878), val(3960, test(3960))
+2023-08-17 23:19:06,236 - main - INFO - Built network: 
+JaxSequential  with shape (12, 2) {
+    LinearJax '0_LinearJax' with shape (12, 2)
+    DynapSim '1_DynapSim' with shape (2, 2)
+}
+2023-08-17 23:19:10,087 - main - INFO - Epoch 0 -> Loss:0.4987124308295872, Acc:0.5797979831695557, Best Acc:0.5797979831695557
+2023-08-17 23:21:21,928 - main - INFO - Epoch 100 -> Loss:0.4980766037883966, Acc:0.5287879109382629, Best Acc:0.6103535890579224
+2023-08-17 23:23:34,699 - main - INFO - Epoch 200 -> Loss:0.4976042431333791, Acc:0.5267676711082458, Best Acc:0.6103535890579224
+2023-08-17 23:24:38,823 - main - INFO - Training finished with accuracy: 0.6103535890579224
