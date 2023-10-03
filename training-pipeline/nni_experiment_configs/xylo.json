@@ -1,5 +1,6 @@
 {
-    "trial_command": "PYTHONPATH=\"lib\" python run_xylo_rockpool_train.py --nni_mode True",
+    "trial_command": "PYTHONPATH=\"lib\" python run_xylo_rockpool_train.py --nni_mode True --epochs 1500",
+    "assessor_start_step": 300,
     "search_space": {
         "n_population": {
             "_type": "choice",

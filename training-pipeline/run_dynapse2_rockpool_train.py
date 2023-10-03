@@ -35,7 +35,7 @@ logger = None
 def build_network(n_input_channels, n_output_channels, dt, neuron_parameters):
     neuron_parameters = {
         **neuron_parameters,
-        'percent_mismatch': 0.05,
+        'percent_mismatch': 0,  # 0.05,
         'dt': dt,
         "has_rec": True,
     }
@@ -179,6 +179,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--nni_mode", type=bool,
                         help="Mandatory if the script is executed with NNI_mode. Enables NNI features as logging, status reporting.", default=False)
+    parser.add_argument("--epochs", type=int,
+                        help="The number of epochs to train for.", default=1500)
     args = parser.parse_args()
 
     # Logger config
@@ -197,7 +199,7 @@ if __name__ == "__main__":
         logger.info(f"Initial parameters: {train_params}")
 
     input_params = {
-        "file_path": "../data/4bit_spikeset_PHASE_ts_sorted.npy",
+        "file_path": "../data/4bit_spikeset_PHASE_full.npy",
         "n_channels": 12,
         "n_classes": 7,
         "sample_duration": 2,
@@ -205,7 +207,7 @@ if __name__ == "__main__":
         # Conversion from 40Hz to 1000Hz, to be compatible with a timestep (dt) of 1e-3
         "sample_time_modifier": 0.020,
         "dt": 1e-3,
-        "enabled_classes": [0, 2, 3],
+        "enabled_classes": [6,8,13,1],
         "use_onehot_labels": True
     }
 
@@ -230,7 +232,7 @@ if __name__ == "__main__":
           train_dl,
           val_dl,
           net,
-          num_epochs=1500,
+          num_epochs=args.epochs,
           lr=1e-3,
           lr_scheduler_fn=None,
           nni_mode=args.nni_mode)

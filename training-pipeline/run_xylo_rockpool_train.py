@@ -143,6 +143,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--nni_mode", type=bool,
                         help="Mandatory if the script is executed with NNI_mode. Enables NNI features as logging, status reporting.", default=False)
+    parser.add_argument("--epochs", type=int,
+                        help="The number of epochs to train for.", default=1500)
     args = parser.parse_args()
 
     # Logger config
@@ -196,7 +198,7 @@ if __name__ == "__main__":
           train_dl,
           val_dl,
           net,
-          num_epochs=5000,
+          num_epochs=args.epochs,
           lr=1e-3,
           lr_scheduler_fn=None,
           # lr_scheduler_fn=exponential_lr_fn,
