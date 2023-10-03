@@ -1,0 +1,21 @@
+{
+    "trial_command": "PYTHONPATH=\"lib\" python run_dynapse2_rockpool_train.py --nni_mode True",
+    "search_space": {
+        "tau_mem": {
+            "_type": "qloguniform",
+            "_value": [
+                2e-2,
+                2e-1,
+                1e-3
+            ]
+        },
+        "tau_syn": {
+            "_type": "qloguniform",
+            "_value": [
+                2e-2,
+                2e-1,
+                1e-3
+            ]
+        }
+    }
+}

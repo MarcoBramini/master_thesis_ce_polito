@@ -1,0 +1,32 @@
+{
+    "trial_command": "PYTHONPATH=\"lib\" python run_xylo_rockpool_train.py --nni_mode True",
+    "search_space": {
+        "n_population": {
+            "_type": "choice",
+            "_value": [
+                8,
+                16,
+                32,
+                64,
+                128,
+                256
+            ]
+        },
+        "tau_syn": {
+            "_type": "qloguniform",
+            "_value": [
+                2e-2,
+                2e-1,
+                1e-3
+            ]
+        },
+        "tau_mem": {
+            "_type": "qloguniform",
+            "_value": [
+                2e-2,
+                2e-1,
+                1e-3
+            ]
+        }
+    }
+}
