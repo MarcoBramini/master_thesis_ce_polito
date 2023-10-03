@@ -1,0 +1,8 @@
+{
+    "net": "JaxSequential  with shape (12, 2) {\n    LinearJax '0_LinearJax' with shape (12, 2)\n    DynapSim '1_DynapSim' with shape (2, 2)\n}",
+    "params": {
+        "tau_mem": 0.075,
+        "tau_syn": 0.159
+    },
+    "val_accuracy": 0.943
+}
