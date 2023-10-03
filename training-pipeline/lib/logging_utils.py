@@ -4,12 +4,7 @@ import sys
 import json
 import numpy as np
 
-nni_utils_available = True
-try:
-    from nni_utils import get_nni_trial_path
-except:
-    nni_utils_available = False
-
+from nni_utils import get_nni_trial_path
 
 
 def configure_logger(nni_mode):
@@ -17,7 +12,7 @@ def configure_logger(nni_mode):
     logger.setLevel(logging.INFO)
 
     handler = None
-    if nni_mode and nni_utils_available:
+    if nni_mode:
         log_file_path = get_nni_trial_path()
         Path(log_file_path).mkdir(parents=True, exist_ok=True)
         handler = logging.FileHandler(f"{log_file_path}/trial.log")
