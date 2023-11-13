@@ -4,10 +4,13 @@ from sklearn.neighbors import KernelDensity
 from scipy import stats
 import itertools as it
 
-DATA_PATH = "../data/data_watch_40.npz"
+DATA_PATH = "../data/data_watch_full_40.npz"
 PROB_DIST_CLASSES_PATH = "prob_dist_classes.npy"
 RUN_KDE = False
 DEBUG = True
+N_CLASSES = 7
+BEST = True
+SHOW_MATRIX = False
 
 classes = [
     "walking",
@@ -69,15 +72,17 @@ def plot_class_kl_divergence_matrix(prob_dist_classes):
             val = 0
             for d in range(6):
                 val += calc_kl_divergence(
-                    prob_dist_classes[c1][d], prob_dist_classes[c2][d])
+                    prob_dist_classes[c1][d], prob_dist_classes[c2][d]
+                )
             matrix[c1][c2] = val
             if c1 <= c2:
                 values.append((c1, c2, np.round(val, decimals=3)))
 
-    plt.figure(figsize=(6, 6))
-    plt.matshow(matrix, fignum=1, cmap="hot")
-    plt.colorbar()
-    plt.show()
+    if SHOW_MATRIX:
+        plt.figure(figsize=(6, 6))
+        plt.matshow(matrix, fignum=1, cmap="hot")
+        plt.colorbar()
+        plt.show()
 
     return matrix, sorted(values, key=lambda x: x[2], reverse=True)
 
@@ -93,8 +98,9 @@ if __name__ == "__main__":
             prob_dist_class = []
             x_c = filter_data_by_class(train_x, train_y, c)
             for d in range(6):
-                prob_dist_dim = calc_kde(x_c[:, :, d].flatten()[
-                                         :, np.newaxis], kde_x_plot)
+                prob_dist_dim = calc_kde(
+                    x_c[:, :, d].flatten()[:, np.newaxis], kde_x_plot
+                )
                 prob_dist_class.append(prob_dist_dim)
             prob_dist_classes.append(prob_dist_class)
             if DEBUG:
@@ -109,8 +115,7 @@ if __name__ == "__main__":
     ranking = {(e[0], e[1]): e[2] for e in ranking}
 
     # Calculate the combinations of the classes with biggest distance
-    n = 4
-    combinations = list(it.combinations(range(len(classes)), n))
+    combinations = list(it.combinations(range(len(classes)), N_CLASSES))
     result = []
     for comb in combinations:
         sum = 0
@@ -118,5 +123,5 @@ if __name__ == "__main__":
             sum += ranking[coup]
         result.append(([classes[i] for i in comb], sum))
 
-    result_sorted = sorted(result, key=lambda x: x[1], reverse=False)
+    result_sorted = sorted(result, key=lambda x: x[1], reverse=BEST)
     print(result_sorted[0:5])

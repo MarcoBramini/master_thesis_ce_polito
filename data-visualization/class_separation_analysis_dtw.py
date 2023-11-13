@@ -3,8 +3,11 @@ from matplotlib import pyplot as plt
 from dtaidistance import dtw_ndim
 import itertools as it
 
-DATA_PATH = "../data/data_watch_40.npz"
+DATA_PATH = "../data/data_watch_full_40.npz"
 DEBUG = True
+N_CLASSES = 2
+BEST = True
+SHOW_MATRIX = False
 
 classes = [
     "walking",
@@ -88,10 +91,11 @@ def plot_sample_distance_matrix(x, y):
             if c1 <= c2:
                 values.append((c1, c2, np.round(val, decimals=3)))
 
-    plt.figure(figsize=(6, 6))
-    plt.matshow(matrix, fignum=1, cmap="hot")
-    plt.colorbar()
-    plt.show()
+    if SHOW_MATRIX:
+        plt.figure(figsize=(6, 6))
+        plt.matshow(matrix, fignum=1, cmap="hot")
+        plt.colorbar()
+        plt.show()
 
     return matrix, sorted(values, key=lambda x: x[2], reverse=True)
 
@@ -114,8 +118,7 @@ if __name__ == "__main__":
     ranking = {(e[0], e[1]): e[2] for e in ranking}
 
     # Calculate the combinations of the classes with biggest distance
-    n = 4
-    combinations = list(it.combinations(range(len(classes)), n))
+    combinations = list(it.combinations(range(len(classes)), N_CLASSES))
     result = []
     for comb in combinations:
         sum = 0
@@ -123,5 +126,5 @@ if __name__ == "__main__":
             sum += ranking[coup]
         result.append(([classes[i] for i in comb], sum))
 
-    result_sorted = sorted(result, key=lambda x: x[1], reverse=True)
+    result_sorted = sorted(result, key=lambda x: x[1], reverse=BEST)
     print(result_sorted[0:5])

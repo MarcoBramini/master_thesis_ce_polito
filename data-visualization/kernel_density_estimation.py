@@ -2,8 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-DATA_PATH = "../data/data_watch_40.npz"
-classes = [13,15,16,17]
+DATA_PATH = "../data/data_watch_full_40.npz"
+classes = [0,5]
+
 
 def load_wisdm2_data(filename):
     filepath = filename
@@ -11,25 +12,25 @@ def load_wisdm2_data(filename):
     return (a["arr_0"], a["arr_1"], a["arr_2"], a["arr_3"], a["arr_4"], a["arr_5"])
 
 
-act_map = {             #       2cb     2cw     3cb     3cw     4cb     4cw    
+act_map = {             #       2cb     2cw     3cb     3cw     4cb     4cw     7cb     7cw
     "A": "walking",     #0              -               -
-    "B": "jogging",     #1                                      *
+    "B": "jogging",     #1                                      *               *
     "C": "stairs",      #2              -               -
     "D": "sitting",     #3
     "E": "standing",    #4
     "F": "typing",      #5                              -
-    "G": "teeth",       #6      *               *               *
-    "H": "soup",        #7
-    "I": "chips",       #8      *               *               *
+    "G": "teeth",       #6      *               *               *               *
+    "H": "soup",        #7                                                      *
+    "I": "chips",       #8      *               *               *               *
     "J": "pasta",       #9
     "K": "drinking",    #10
-    "L": "sandwich",    #11
-    "M": "kicking",     #12
-    "O": "catch",       #13                     *               *       -
-    "P": "dribbling",   #14
-    "Q": "writing",     #15                                             -
-    "R": "clapping",    #16                                             -
-    "S": "folding",     #17                                             -
+    "L": "sandwich",    #11                                                             -
+    "M": "kicking",     #12                                                             -
+    "O": "catch",       #13                     *               *       -       *       -
+    "P": "dribbling",   #14                                                     *       -
+    "Q": "writing",     #15                                             -               -
+    "R": "clapping",    #16                                             -               -
+    "S": "folding",     #17                                             -       *       -
 }
 
 (x_train, x_val, x_test, y_train_oh, y_val_oh, y_test_oh) = load_wisdm2_data(DATA_PATH)
@@ -93,8 +94,15 @@ for ci, _class in enumerate(classes):
 handles, labels = plt.gca().get_legend_handles_labels()
 by_label = dict(zip(labels, handles))
 fig.legend(
-    by_label.values(), by_label.keys(), loc="center right", prop={"size": "large"}
+    by_label.values(),
+    by_label.keys(),
+    loc="lower center",
+    prop={"size": "large"},
+    ncol=len(by_label.keys()),
 )
-fig.tight_layout()
-plt.subplots_adjust(left=0.07, right=0.80, wspace=0.25, hspace=0.35)
-plt.show()
+fig.tight_layout(rect=[0, 0.07, 1, 1])
+plt.subplots_adjust(
+    left=0.08, right=0.96, bottom=0.1, top=0.96, wspace=0.25, hspace=0.30
+)
+plt.savefig("kde")
+

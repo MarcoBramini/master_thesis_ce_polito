@@ -27,24 +27,27 @@ classes = [
 
 
 def load_data(filename):
-    x,y = None,None
-    with open(filename, 'rb') as file:
+    x, y = None, None
+    with open(filename, "rb") as file:
         data = np.load(file, allow_pickle=True)
-        x = data[:,0:2]
-        y = data[:,2]
-        
-    return x,y
+        x = data[:, 0:2]
+        y = data[:, 2]
+
+    return x, y
+
 
 def filter_data_by_class(x, y, c):
     return x[y == c]
 
+
 def plot_sample(x):
-        plt.scatter(x[1], x[0],marker="|")
-        plt.yticks(range(12))
-        plt.ylim((-1,12))
-        plt.show()
+    plt.scatter(x[1], x[0], marker="|")
+    plt.yticks(range(12))
+    plt.ylim((-1, 12))
+    plt.show()
+
 
 if __name__ == "__main__":
-    x,y = load_data(DATA_PATH)
-    x_c = filter_data_by_class(x,y,0)
+    x, y = load_data(DATA_PATH)
+    x_c = filter_data_by_class(x, y, 2)
     plot_sample(x_c[0])
