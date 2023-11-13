@@ -1,0 +1,17 @@
+2023-10-17 23:20:07,352 - main - INFO - PyTorch is currently running on: cuda
+2023-10-17 23:20:07,356 - main - INFO - Initial parameters: {'n_population': 32, 'tau_mem': 0.07100000000000001, 'tau_syn': 0.095}
+2023-10-17 23:20:15,598 - main - INFO - Loaded 71464 events from file ../data/4bit_spikeset_PHASE_full.npy
+2023-10-17 23:20:15,750 - main - INFO - Generated events partitions: train(42878), val(14293, test(14293))
+2023-10-17 23:20:15,804 - main - INFO - Built network: 
+TorchSequential  with shape (12, 7) {
+    LinearTorch '0_LinearTorch' with shape (12, 32)
+    LIFTorch '1_LIFTorch' with shape (32, 32)
+    LinearTorch '2_LinearTorch' with shape (32, 32)
+    LIFTorch '3_LIFTorch' with shape (32, 32)
+    LinearTorch '4_LinearTorch' with shape (32, 7)
+    LIFTorch '5_LIFTorch' with shape (7, 7)
+}
+2023-10-17 23:20:21,373 - main - INFO - Epoch 0 -> Loss:5.769934636790578, Acc:0.21444063527600923, Best Acc:0.21444063527600923
+2023-10-17 23:26:03,791 - main - INFO - Epoch 100 -> Loss:1.0260254115593144, Acc:0.6470999790107045, Best Acc:0.6576645910585601
+2023-10-17 23:31:46,137 - main - INFO - Epoch 200 -> Loss:0.8818685601397258, Acc:0.697824109704051, Best Acc:0.7051003987966137
+2023-10-17 23:34:33,002 - main - INFO - Training finished with accuracy: 0.712726509480165

@@ -1,0 +1,40 @@
+2023-10-12 23:55:24,304 - main - INFO - PyTorch is currently running on: cuda
+2023-10-12 23:55:24,308 - main - INFO - Initial parameters: {'n_population': 64, 'tau_mem': 0.183, 'tau_syn': 0.08700000000000001}
+2023-10-12 23:55:32,378 - main - INFO - Loaded 71464 events from file ../data/4bit_spikeset_PHASE_full.npy
+2023-10-12 23:55:32,524 - main - INFO - Generated events partitions: train(42878), val(14293, test(14293))
+2023-10-12 23:55:32,574 - main - INFO - Built network: 
+TorchSequential  with shape (12, 7) {
+    LinearTorch '0_LinearTorch' with shape (12, 64)
+    LIFTorch '1_LIFTorch' with shape (64, 64)
+    LinearTorch '2_LinearTorch' with shape (64, 7)
+    LIFTorch '3_LIFTorch' with shape (7, 7)
+}
+2023-10-12 23:55:33,933 - main - INFO - Dropped 1 output synapses each for 12 neurons in layer LinearTorch '0_LinearTorch' with shape (12, 64) (Rec:None)
+2023-10-12 23:55:37,837 - main - INFO - Epoch 0 -> Loss:7.212975560165033, Acc:0.21772895823130203, Best Acc:0.21772895823130203
+2023-10-12 23:56:02,631 - main - INFO - Dropped 1 output synapses each for 12 neurons in layer LinearTorch '0_LinearTorch' with shape (12, 64) (Rec:None)
+2023-10-12 23:56:30,305 - main - INFO - Dropped 1 output synapses each for 12 neurons in layer LinearTorch '0_LinearTorch' with shape (12, 64) (Rec:None)
+2023-10-12 23:56:58,018 - main - INFO - Dropped 1 output synapses each for 12 neurons in layer LinearTorch '0_LinearTorch' with shape (12, 64) (Rec:None)
+2023-10-12 23:57:25,629 - main - INFO - Dropped 1 output synapses each for 12 neurons in layer LinearTorch '0_LinearTorch' with shape (12, 64) (Rec:None)
+2023-10-12 23:57:53,293 - main - INFO - Dropped 1 output synapses each for 12 neurons in layer LinearTorch '0_LinearTorch' with shape (12, 64) (Rec:None)
+2023-10-12 23:58:20,917 - main - INFO - Dropped 1 output synapses each for 12 neurons in layer LinearTorch '0_LinearTorch' with shape (12, 64) (Rec:None)
+2023-10-12 23:58:48,539 - main - INFO - Dropped 1 output synapses each for 12 neurons in layer LinearTorch '0_LinearTorch' with shape (12, 64) (Rec:None)
+2023-10-12 23:59:16,135 - main - INFO - Dropped 1 output synapses each for 12 neurons in layer LinearTorch '0_LinearTorch' with shape (12, 64) (Rec:None)
+2023-10-12 23:59:43,742 - main - INFO - Dropped 1 output synapses each for 12 neurons in layer LinearTorch '0_LinearTorch' with shape (12, 64) (Rec:None)
+2023-10-13 00:00:11,390 - main - INFO - Dropped 1 output synapses each for 12 neurons in layer LinearTorch '0_LinearTorch' with shape (12, 64) (Rec:None)
+2023-10-13 00:00:14,255 - main - INFO - Epoch 100 -> Loss:0.7964915269758643, Acc:0.6892184985657315, Best Acc:0.7085286503883019
+2023-10-13 00:00:39,153 - main - INFO - Dropped 1 output synapses each for 12 neurons in layer LinearTorch '0_LinearTorch' with shape (12, 64) (Rec:None)
+2023-10-13 00:01:06,816 - main - INFO - Dropped 1 output synapses each for 12 neurons in layer LinearTorch '0_LinearTorch' with shape (12, 64) (Rec:None)
+2023-10-13 00:01:34,511 - main - INFO - Dropped 1 output synapses each for 12 neurons in layer LinearTorch '0_LinearTorch' with shape (12, 64) (Rec:None)
+2023-10-13 00:02:02,196 - main - INFO - Dropped 1 output synapses each for 12 neurons in layer LinearTorch '0_LinearTorch' with shape (12, 64) (Rec:None)
+2023-10-13 00:02:29,936 - main - INFO - Dropped 1 output synapses each for 12 neurons in layer LinearTorch '0_LinearTorch' with shape (12, 64) (Rec:None)
+2023-10-13 00:02:57,616 - main - INFO - Dropped 1 output synapses each for 12 neurons in layer LinearTorch '0_LinearTorch' with shape (12, 64) (Rec:None)
+2023-10-13 00:03:25,184 - main - INFO - Dropped 1 output synapses each for 12 neurons in layer LinearTorch '0_LinearTorch' with shape (12, 64) (Rec:None)
+2023-10-13 00:03:52,814 - main - INFO - Dropped 1 output synapses each for 12 neurons in layer LinearTorch '0_LinearTorch' with shape (12, 64) (Rec:None)
+2023-10-13 00:04:20,425 - main - INFO - Dropped 1 output synapses each for 12 neurons in layer LinearTorch '0_LinearTorch' with shape (12, 64) (Rec:None)
+2023-10-13 00:04:48,001 - main - INFO - Dropped 1 output synapses each for 12 neurons in layer LinearTorch '0_LinearTorch' with shape (12, 64) (Rec:None)
+2023-10-13 00:04:50,793 - main - INFO - Epoch 200 -> Loss:0.7544065190524589, Acc:0.7141957601623172, Best Acc:0.7276289092562792
+2023-10-13 00:05:15,625 - main - INFO - Dropped 1 output synapses each for 12 neurons in layer LinearTorch '0_LinearTorch' with shape (12, 64) (Rec:None)
+2023-10-13 00:05:43,185 - main - INFO - Dropped 1 output synapses each for 12 neurons in layer LinearTorch '0_LinearTorch' with shape (12, 64) (Rec:None)
+2023-10-13 00:06:10,800 - main - INFO - Dropped 1 output synapses each for 12 neurons in layer LinearTorch '0_LinearTorch' with shape (12, 64) (Rec:None)
+2023-10-13 00:06:38,443 - main - INFO - Dropped 1 output synapses each for 12 neurons in layer LinearTorch '0_LinearTorch' with shape (12, 64) (Rec:None)
+2023-10-13 00:07:06,058 - main - INFO - Training finished with accuracy: 0.7312670538025606

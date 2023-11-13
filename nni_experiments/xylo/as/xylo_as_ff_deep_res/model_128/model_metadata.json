@@ -1,0 +1,9 @@
+{
+    "net": "TorchSequential  with shape (12, 7) {\n    LinearTorch '0_LinearTorch' with shape (12, 128)\n    LIFTorch '1_LIFTorch' with shape (128, 128)\n    TorchResidual '2_TorchResidual' with shape (128, 128) {\n        LinearTorch '0_LinearTorch' with shape (128, 128)\n        LIFTorch '1_LIFTorch' with shape (128, 128)\n    }\n    LinearTorch '3_LinearTorch' with shape (128, 7)\n    LIFTorch '4_LIFTorch' with shape (7, 7)\n}",
+    "params": {
+        "n_population": 128,
+        "tau_mem": 0.153,
+        "tau_syn": 0.082
+    },
+    "val_accuracy": 0.773
+}
