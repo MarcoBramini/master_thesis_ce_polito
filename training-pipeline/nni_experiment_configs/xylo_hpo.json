@@ -1,0 +1,22 @@
+{
+    "trial_command": "PYTHONPATH=\"lib\" python run_xylo_rockpool_train.py --nni_mode True --epochs 250",
+    "assessor_start_step": 100,
+    "search_space": {
+        "tau_syn": {
+            "_type": "qloguniform",
+            "_value": [
+                2e-2,
+                2e-1,
+                1e-3
+            ]
+        },
+        "tau_mem": {
+            "_type": "qloguniform",
+            "_value": [
+                2e-2,
+                2e-1,
+                1e-3
+            ]
+        }
+    }
+}

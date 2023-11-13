@@ -1,0 +1,46 @@
+{
+    "trial_command": "PYTHONPATH=\"lib\" python run_xylo_quantization_tuning.py --nni_mode True --model_path \"..\/models\/xylo_4cb_ff_deep_deep_res\"",
+    "assessor_start_step": 300,
+    "search_space": {
+        "global_activity_factor": {
+            "_type": "quniform",
+            "_value": [
+                0.60,
+                1.40,
+                0.01
+            ]
+        },
+        "c0_activity_factor": {
+            "_type": "quniform",
+            "_value": [
+                0.60,
+                1.40,
+                0.01
+            ]
+        },
+        "c1_activity_factor": {
+            "_type": "quniform",
+            "_value": [
+                0.60,
+                1.40,
+                0.01
+            ]
+        },
+        "c2_activity_factor": {
+            "_type": "quniform",
+            "_value": [
+                0.60,
+                1.40,
+                0.01
+            ]
+        },
+        "c3_activity_factor": {
+            "_type": "quniform",
+            "_value": [
+                0.60,
+                1.40,
+                0.01
+            ]
+        }
+    }
+}
