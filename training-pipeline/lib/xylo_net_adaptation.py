@@ -77,6 +77,7 @@ def drop_exceeding_layer_output_synapses(lin_layer, prev_lif_layer=None, max_syn
     lin_layer_shape = get_linear_layer_shape(w)
     
     w_stack = w
+    prev_had_rec = None
 
     if prev_lif_layer != None and (prev_had_rec := "w_rec" in prev_lif_layer.parameters().keys()):
             w_rec = prev_lif_layer.parameters()["w_rec"].clone().detach().numpy()
@@ -88,7 +89,7 @@ def drop_exceeding_layer_output_synapses(lin_layer, prev_lif_layer=None, max_syn
 
     w = w_stack
     if prev_lif_layer != None and prev_had_rec:
-        w,w_rec = w_stack[...,:lin_layer_shape[0]],w_stack[...,lin_layer_shape[0]:]
+        w,w_rec = w_stack[...,:lin_layer_shape[1]],w_stack[...,lin_layer_shape[1]:]
         prev_lif_layer.parameters()["w_rec"].data = torch.nn.parameter.Parameter(torch.tensor(w_rec, requires_grad=True))
     
     lin_layer.parameters()["weight"].data = torch.nn.parameter.Parameter(torch.tensor(w, requires_grad=True))
