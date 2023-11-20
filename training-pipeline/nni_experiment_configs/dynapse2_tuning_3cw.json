@@ -1,6 +1,7 @@
 {
     "trial_command": "PYTHONPATH=\"lib\" python run_dynapse2_quantization_tuning.py --nni_mode True --model_path \"..\/models\/dynapse2_3cw\"",
     "assessor_start_step": 300,
+    "max_trial_number": 500,
     "search_space": {
         "global_activity_factor": {
             "_type": "quniform",
