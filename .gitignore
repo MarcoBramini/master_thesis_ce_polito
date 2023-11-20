@@ -161,3 +161,8 @@ cython_debug/
 .vscode/
 
 .DS_Store
+samna.log
+DYNAP-SE2_stuff
+papers
+data/*.npy
+data/*.npz
