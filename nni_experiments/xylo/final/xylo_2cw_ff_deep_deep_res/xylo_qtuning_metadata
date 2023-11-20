@@ -1,0 +1,13 @@
+{
+    "params": {
+        "global_activity_factor": 1.37,
+        "c0_activity_factor": 1.34,
+        "c1_activity_factor": 1.34,
+        "c2_activity_factor": 1,
+        "c3_activity_factor": 1,
+        "c4_activity_factor": 1,
+        "c5_activity_factor": 1,
+        "c6_activity_factor": 1
+    },
+    "val_accuracy_after_tuning": 0.8015151515151515
+}
