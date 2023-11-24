@@ -33,6 +33,16 @@ device = None
 def build_network(
     n_input_channels, n_population, n_output_channels, dt, neuron_parameters={}
 ):
+    """
+    Builds the model to be trained.
+    Input Params:
+      - n_input_channels: Number of input channels of the model. Must match the data channels
+      - n_population: Number of neurons in the hidden layers of the network.
+      - n_output_channels: Number of output channels. Must match the amount of classes in the task
+      - dt: Duration of a single timestep. Depends on the input data sampling rate
+      - neuron_parameters: Neuron specific parameters (i.e. tau_mem, tau_syn)
+      - load_model_path: Load a model checkpoint for resuming training
+    """
     neuron_parameters = {
         **neuron_parameters,
         "bias": Constant(0.0),
@@ -60,6 +70,19 @@ def train(
     adapt_network_epochs=10,
     nni_mode=False,
 ):
+    """
+    Runs the training of the passed model.
+    Input Params:
+      - input_params: An object which includes dataset specific properties
+      - train_dl: Training DataLoader
+      - val_dl: Validation DataLoader
+      - net: Model to train
+      - num_epochs: Controls the duration of the training in terms of number of epochs
+      - lr: Learning rate
+      - lr_scheduler_fn: Controls if the training must use a scheduled learning rate
+      - adapt_network_epochs: Controls every how many epochs Synapse Pruning must be ran
+      - nni_mode: Controls if the HPO functionalities must be activated
+    """
     # - Initialise optimiser
     optimizer = Adam(net.parameters().astorch(), lr=lr)
     scheduler = None
@@ -173,6 +196,12 @@ def train(
 
 
 def evaluate(net, dl):
+    """
+    Evaluates the model using the provided data.
+    Input Params:
+      - dl: Evaluation DataLoader
+      - net: Model to be evaluated
+    """
     net.eval()
     ds = dl.dataset
     with torch.no_grad():

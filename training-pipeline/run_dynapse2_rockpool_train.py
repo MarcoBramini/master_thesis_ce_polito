@@ -9,6 +9,9 @@ from rockpool.nn.modules.jax import LinearJax
 from rockpool.nn.combinators import Sequential
 from rockpool.devices.dynapse import DynapSim, dynamic_mismatch_prototype
 from rockpool.transform.mismatch import mismatch_generator
+from rockpool.devices.dynapse.lookup import (
+    default_currents,
+)
 
 # Jax Imports
 import jax
@@ -22,7 +25,7 @@ import nni
 
 # Local Imports
 from lib.data_loading import load_data
-from lib.dynapse2_parameters import get_itau_parameter
+from lib.dynapse2_parameters import get_itau_parameter, get_igain_parameter
 from lib.logging_utils import (
     configure_logger,
     save_dynapsimnet_model_summary,
@@ -36,6 +39,15 @@ logger = None
 def build_network(
     n_input_channels, n_output_channels, dt, neuron_parameters, load_model_path=None
 ):
+    """
+    Builds the model to be trained.
+    Input Params:
+      - n_input_channels: Number of input channels of the model. Must match the data channels
+      - n_output_channels: Number of output channels. Must match the amount of classes in the task
+      - dt: Duration of a single timestep. Depends on the input data sampling rate
+      - neuron_parameters: Neuron specific parameters (i.e. tau_mem, tau_syn)
+      - load_model_path: Load a model checkpoint for resuming training
+    """
     neuron_parameters = {
         **neuron_parameters,
         "percent_mismatch": 0.05,
@@ -43,12 +55,34 @@ def build_network(
         "has_rec": True,
     }
 
+    # Model loading for resume training
+    layer_params = {}
+    w_in_opt = None
+    w_rec_opt = None
+    if load_model_path != None:
+        # Load simulation parameters
+        sim_params = np.load(
+            f"{load_model_path}/model_sim_params.npy", allow_pickle=True
+        )
+        layer_params = sim_params.item()["1_DynapSim"]
+
+        # Obtain pretrained layer weights
+        opt_params = np.load(f"{load_model_path}/model_params.npy", allow_pickle=True)
+        w_in_opt = opt_params.item()["0_LinearJax"]["weight"]
+        w_rec_opt = opt_params.item()["1_DynapSim"]["w_rec"]
+
+        logger.info(f"Loaded model: {load_model_path}")
+    layer_params.update(**neuron_parameters)
+
     # - Build network
     net = Sequential(
-        LinearJax((n_input_channels, n_output_channels), has_bias=False),
+        LinearJax(
+            (n_input_channels, n_output_channels), has_bias=False, weight=w_in_opt
+        ),
         DynapSim(
             (n_output_channels, n_output_channels),
-            **neuron_parameters,
+            w_rec=w_rec_opt,
+            **layer_params,
         ),
     )
 
@@ -58,13 +92,28 @@ def build_network(
 
 
 def build_target_signal(y, n_samples, n_timesteps):
-    return np.array([[y[i]] * n_timesteps for i in range(n_samples)])
+    """
+    Generates a target signal for training, in which the output neuron associated to the correct label
+    fires at each timestep.
+    Input Params:
+      - y: One-hot encoded labels
+      - n_timesteps: Number of timesteps in each sample
+    """
+    return np.array([[y[i]] * n_timesteps for i in range(len(y))])
 
 
-# - Loss function
 @jax.jit
 @jax.value_and_grad
 def loss_vgf(params, net, input, target):
+    """
+    Evolves the network with the input samples, evaluate with the target signal and calculates loss and
+    gradient.
+    Input Params:
+      - params: Model parameters
+      - net: Model under training
+      - input: Batch of samples
+      - target: Batch of target signals
+    """
     net = net.set_attributes(params)
     net = net.reset_state()
     output, _, _ = net(input)
@@ -83,6 +132,20 @@ def train(
     lr_scheduler_fn=None,
     nni_mode=False,
 ):
+    """
+    Runs the training of the passed model.
+    Input Params:
+      - input_params: An object which includes dataset specific properties
+      - train_dl: Training DataLoader
+      - val_dl: Validation DataLoader
+      - net: Model to train
+      - num_epochs: Controls the duration of the training in terms of number of epochs
+      - apply_mismatch_after: Controls after how many epochs to start running mismatch generation
+      - mismatch_epochs: Controls every how many epochs mismatch generation must be ran
+      - lr: Learning rate
+      - lr_scheduler_fn: Controls if the training must use a scheduled learning rate
+      - nni_mode: Controls if the HPO functionalities must be activated
+    """
     # - Initialise optimiser
     init_fun, update_fun, get_params = adam(
         step_size=lr_scheduler_fn if lr_scheduler_fn else lr
@@ -217,6 +280,13 @@ def evaluate_batch(x, y, net, params):
 
 
 def evaluate(net, params, dl):
+    """
+    Evaluates the model using the provided data.
+    Input Params:
+      - dl: Evaluation DataLoader
+      - net: Model to be evaluated
+      - params: Model parameters
+    """
     ds = dl.dataset
     return evaluate_batch(ds.x.numpy(), ds.y.numpy(), net, params)
 
@@ -289,6 +359,8 @@ if __name__ == "__main__":
         neuron_parameters={
             "Itau_mem": get_itau_parameter("mem", train_params["tau_mem"]),
             "Itau_syn": get_itau_parameter("ampa", train_params["tau_syn"]),
+            # "Igain_mem": get_igain_parameter("mem", train_params["tau_mem"], train_params["gain_mem"]),
+            # "Igain_syn": get_igain_parameter("ampa", train_params["tau_syn"], train_params["gain_syn"]),
         },
         load_model_path=args.load_model_path,
     )
