@@ -36,7 +36,7 @@ from lib.nni_utils import get_nni_trial_path
 logger = None
 
 
-def build_network(
+def build_model(
     n_input_channels, n_output_channels, dt, neuron_parameters, load_model_path=None
 ):
     """
@@ -75,7 +75,7 @@ def build_network(
     layer_params.update(**neuron_parameters)
 
     # - Build network
-    net = Sequential(
+    model = Sequential(
         LinearJax(
             (n_input_channels, n_output_channels), has_bias=False, weight=w_in_opt
         ),
@@ -86,9 +86,9 @@ def build_network(
         ),
     )
 
-    logger.info(f"Built network: \n{net}")
+    logger.info(f"Built network: \n{model}")
 
-    return net
+    return model
 
 
 def build_target_signal(y, n_samples, n_timesteps):
@@ -104,19 +104,19 @@ def build_target_signal(y, n_samples, n_timesteps):
 
 @jax.jit
 @jax.value_and_grad
-def loss_vgf(params, net, input, target):
+def loss_vgf(params, model, input, target):
     """
     Evolves the network with the input samples, evaluate with the target signal and calculates loss and
     gradient.
     Input Params:
       - params: Model parameters
-      - net: Model under training
+      - model: Model under training
       - input: Batch of samples
       - target: Batch of target signals
     """
-    net = net.set_attributes(params)
-    net = net.reset_state()
-    output, _, _ = net(input)
+    model = model.set_attributes(params)
+    model = model.reset_state()
+    output, _, _ = model(input)
     return jl.mse(output, target)
 
 
@@ -124,7 +124,7 @@ def train(
     input_params,
     train_dl,
     val_dl,
-    net,
+    model,
     num_epochs=1500,
     apply_mismatch_after=None,
     mismatch_epochs=100,
@@ -138,7 +138,7 @@ def train(
       - input_params: An object which includes dataset specific properties
       - train_dl: Training DataLoader
       - val_dl: Validation DataLoader
-      - net: Model to train
+      - model: Model to train
       - num_epochs: Controls the duration of the training in terms of number of epochs
       - apply_mismatch_after: Controls after how many epochs to start running mismatch generation
       - mismatch_epochs: Controls every how many epochs mismatch generation must be ran
@@ -150,14 +150,14 @@ def train(
     init_fun, update_fun, get_params = adam(
         step_size=lr_scheduler_fn if lr_scheduler_fn else lr
     )
-    opt_state = init_fun(net.parameters())
+    opt_state = init_fun(model.parameters())
     update_fun = jax.jit(update_fun)
 
     regenerate_mismatch = None
     if apply_mismatch_after != None:
         # Obtain the prototoype and the random number generator keys
         rng_key = jnp.array([2021, 2022], dtype=jnp.uint32)
-        mismatch_prototype = dynamic_mismatch_prototype(net)
+        mismatch_prototype = dynamic_mismatch_prototype(model)
 
         # Get the mismatch generator function (TEST: turn mismatch off for training, only use for finetuning)
         regenerate_mismatch = mismatch_generator(
@@ -196,12 +196,12 @@ def train(
                 and i == 0
             ):
                 rng_key, _ = rand.split(rng_key)
-                new_params = regenerate_mismatch(net, rng_key=rng_key)
-                net = net.set_attributes(new_params)
+                new_params = regenerate_mismatch(model, rng_key=rng_key)
+                model = model.set_attributes(new_params)
                 logger.info("Applied mismatch")
 
             # - Compute loss and gradient
-            l, g = loss_vgf(opt_params, net, x_train_batch.numpy(), target)
+            l, g = loss_vgf(opt_params, model, x_train_batch.numpy(), target)
             epoch_cum_loss += l.item()
 
             # - Update optimiser
@@ -210,12 +210,12 @@ def train(
         loss_t.append(epoch_cum_loss / len(train_dl))
 
         # Evaluate model on validation set
-        acc = evaluate(net, opt_params, val_dl)
+        acc = evaluate(model, opt_params, val_dl)
         acc_t.append(float(acc))
         if acc > best_acc:
             save_dynapsimnet_model_summary(
                 opt_params,
-                net,
+                model,
                 train_params,
                 acc,
                 get_nni_trial_path() if nni_mode else "best_model",
@@ -270,25 +270,25 @@ def train(
 
 
 # @jax.jit
-def evaluate_batch(x, y, net, params):
-    net = net.set_attributes(params)
-    net = net.reset_state()
-    output, _, _ = net(x)
+def evaluate_batch(x, y, model, params):
+    model = model.set_attributes(params)
+    model = model.reset_state()
+    output, _, _ = model(x)
     m = jnp.sum(output, axis=1)
     preds = jnp.argmax(m, axis=1)
     return jnp.mean(jnp.array(preds == y))
 
 
-def evaluate(net, params, dl):
+def evaluate(model, params, dl):
     """
     Evaluates the model using the provided data.
     Input Params:
       - dl: Evaluation DataLoader
-      - net: Model to be evaluated
+      - model: Model to be evaluated
       - params: Model parameters
     """
     ds = dl.dataset
-    return evaluate_batch(ds.x.numpy(), ds.y.numpy(), net, params)
+    return evaluate_batch(ds.x.numpy(), ds.y.numpy(), model, params)
 
 
 if __name__ == "__main__":
@@ -350,7 +350,7 @@ if __name__ == "__main__":
 
     train_dl, val_dl, test_dl = load_data(**input_params)
 
-    net = build_network(
+    model = build_model(
         input_params["n_channels"],
         len(input_params["enabled_classes"])
         if input_params["enabled_classes"] != None
@@ -373,7 +373,7 @@ if __name__ == "__main__":
         input_params,
         train_dl,
         val_dl,
-        net,
+        model,
         num_epochs=args.epochs,
         apply_mismatch_after=args.apply_mismatch_after,
         lr=1e-3,

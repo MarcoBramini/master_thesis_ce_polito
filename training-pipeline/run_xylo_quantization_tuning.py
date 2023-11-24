@@ -33,6 +33,11 @@ logger = None
 
 
 def load_data_from_model_path(model_path):
+    """
+    Loads the input data associated to the model checkpoint passed as input
+    Input Params:
+      - model_path: Path of the model checkpoint
+    """
     # Obtain training metadata
     training_metadata = None
     with open(f"{model_path}/training_metadata.json") as f:
@@ -46,6 +51,11 @@ def load_data_from_model_path(model_path):
 
 
 def load_network_from_path(model_path, dt):
+    """
+    Restores the model from the checkpoint files
+    Input Params:
+      - model_path: Path of the model checkpoint
+    """
     # Obtain neuron parameters
     model_metadata = None
     with open(f"{model_path}/model_metadata.json") as f:
@@ -64,23 +74,30 @@ def load_network_from_path(model_path, dt):
     with open(f"{model_path}/model_params") as f:
         model_params = json.load(f)
 
-    net = net_from_params(model_params, neuron_parameters)
+    model = net_from_params(model_params, neuron_parameters)
 
-    logger.info(f"Built network: \n\t{net}")
+    logger.info(f"Built network: \n\t{model}")
 
     # Load network parameters
-    net.load(f"{model_path}/model_params")
+    model.load(f"{model_path}/model_params")
 
     # Adapt network to be compatible with and deployable on Xylo
-    adapt_network(net, max_synapses=62)
+    adapt_network(model, max_synapses=62)
 
-    return net
+    return model
 
 
-def quantize_network(net, tuning_params):
+def quantize_network(model, tuning_params):
+    """
+    Quantizes the model after applying Quantization Tuning.
+    Returns an hardware configuration for evaluation and the tuned quantized parameters.
+    Input Params:
+      - model: Model to tune
+      - tuning_params: Correction factors for Quantization Tuning
+    """
     # Convert network to spec
     spec = mapper(
-        net.as_graph(),
+        model.as_graph(),
         weight_dtype="float",
         threshold_dtype="float",
         dash_dtype="float",
@@ -119,7 +136,13 @@ def quantize_network(net, tuning_params):
 
 
 def evaluate_model(mod, val_dl, nni_mode=False):
-    # Evaluate the XyloSim network on the validation set
+    """
+    Evaluates the model using the provided data.
+    Input Params:
+      - val_dl: Validation set DataLoader
+      - model: Model to be evaluated
+    """
+
     ds = val_dl.dataset
     preds = []
     scores = []
@@ -166,7 +189,7 @@ if __name__ == "__main__":
 
     train_dl, val_dl, test_dl, input_params = load_data_from_model_path(args.model_path)
 
-    net = load_network_from_path(args.model_path, input_params["dt"])
+    model = load_network_from_path(args.model_path, input_params["dt"])
 
     tuning_params = {
         "global_activity_factor": 1,
@@ -184,7 +207,7 @@ if __name__ == "__main__":
         tuning_params.update(optimized_params)
         logger.info(f"Initial parameters: {tuning_params}")
 
-    config, params_Q = quantize_network(net, tuning_params)
+    config, params_Q = quantize_network(model, tuning_params)
 
     mod = XyloSim.from_config(config, dt=input_params["dt"])
 

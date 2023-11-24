@@ -31,6 +31,11 @@ logger = None
 
 
 def load_data_from_model_path(model_path):
+    """
+    Loads the input data associated to the model checkpoint passed as input
+    Input Params:
+      - model_path: Path of the model checkpoint
+    """
     # Obtain training metadata
     training_metadata = None
     with open(f"{model_path}/training_metadata.json") as f:
@@ -43,7 +48,12 @@ def load_data_from_model_path(model_path):
     return train_dl, val_dl, test_dl, input_params
 
 
-def load_network_from_path(model_path, dt):
+def load_model_from_path(model_path):
+    """
+    Restores the model from the checkpoint files
+    Input Params:
+      - model_path: Path of the model checkpoint
+    """
     # Load simulation parameters
     sim_params = np.load(f"{model_path}/model_sim_params.npy", allow_pickle=True)
     layer_params = sim_params.item()["1_DynapSim"]
@@ -61,7 +71,7 @@ def load_network_from_path(model_path, dt):
         else input_params["n_classes"]
     )
 
-    net = Sequential(
+    model = Sequential(
         LinearJax(
             (n_input_channels, n_output_channels), has_bias=False, weight=w_in_opt
         ),
@@ -73,14 +83,21 @@ def load_network_from_path(model_path, dt):
         ),
     )
 
-    logger.info(f"Built network: \n\t{net}")
+    logger.info(f"Built network: \n\t{model}")
 
-    return net
+    return model
 
 
-def quantize_network(net, tuning_params):
+def quantize_model(model, tuning_params):
+    """
+    Quantizes the model after applying Quantization Tuning.
+    Returns an hardware configuration for evaluation and the tuned quantized parameters.
+    Input Params:
+      - model: Model to tune
+      - tuning_params: Correction factors for Quantization Tuning
+    """
     # Convert network to spec
-    net_graph = net.as_graph()
+    net_graph = model.as_graph()
     spec = mapper(net_graph)
 
     # Fine tune the network weights prior quantization
@@ -131,11 +148,16 @@ def quantize_network(net, tuning_params):
     return config, params_Q
 
 
-def evaluate_model(mod, val_dl, nni_mode=False):
-    # Evaluate the DYNAPSim network on the validation set
-    ds = val_dl.dataset
+def evaluate_model(model, val_dl):
+    """
+    Evaluates the model using the provided data.
+    Input Params:
+      - val_dl: Validation set DataLoader
+      - model: Model to be evaluated
+    """
 
-    output, _, _ = mod(ds.x.numpy())
+    ds = val_dl.dataset
+    output, _, _ = model(ds.x.numpy())
     m = np.sum(output, axis=1)
     preds = np.argmax(m, axis=1)
     acc = np.mean(np.array(preds == ds.y.numpy()))
@@ -171,7 +193,7 @@ if __name__ == "__main__":
 
     train_dl, val_dl, test_dl, input_params = load_data_from_model_path(args.model_path)
 
-    net = load_network_from_path(args.model_path, input_params["dt"])
+    model = load_model_from_path(args.model_path, input_params["dt"])
 
     tuning_params = {
         "global_activity_factor": 1,
@@ -189,11 +211,11 @@ if __name__ == "__main__":
         tuning_params.update(optimized_params)
         logger.info(f"Initial parameters: {tuning_params}")
 
-    config, params_Q = quantize_network(net, tuning_params)
+    config, params_Q = quantize_model(model, tuning_params)
 
-    mod = dynapsim_net_from_config(**config)
+    model = dynapsim_net_from_config(**config)
 
-    acc = evaluate_model(mod, val_dl, nni_mode=args.nni_mode)
+    acc = evaluate_model(model, val_dl, nni_mode=args.nni_mode)
 
     if args.nni_mode:
         nni.report_final_result({"default": float(acc)})

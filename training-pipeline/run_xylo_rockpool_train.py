@@ -50,20 +50,20 @@ def build_network(
         "dt": dt,
     }
 
-    net = xylo_networks.get_ff_deep_deep_res(
+    model = xylo_networks.get_ff_deep_deep_res(
         n_input_channels, n_population, n_output_channels, neuron_parameters
     )
 
-    logger.info(f"Built network: \n{net}")
+    logger.info(f"Built network: \n{model}")
 
-    return net
+    return model
 
 
 def train(
     input_params,
     train_dl,
     val_dl,
-    net,
+    model,
     num_epochs=1500,
     lr=1e-3,
     lr_scheduler_fn=None,
@@ -76,7 +76,7 @@ def train(
       - input_params: An object which includes dataset specific properties
       - train_dl: Training DataLoader
       - val_dl: Validation DataLoader
-      - net: Model to train
+      - model: Model to train
       - num_epochs: Controls the duration of the training in terms of number of epochs
       - lr: Learning rate
       - lr_scheduler_fn: Controls if the training must use a scheduled learning rate
@@ -84,7 +84,7 @@ def train(
       - nni_mode: Controls if the HPO functionalities must be activated
     """
     # - Initialise optimiser
-    optimizer = Adam(net.parameters().astorch(), lr=lr)
+    optimizer = Adam(model.parameters().astorch(), lr=lr)
     scheduler = None
     if lr_scheduler_fn is not None:
         scheduler = lr_scheduler_fn(optimizer)
@@ -93,7 +93,7 @@ def train(
     loss_fun = CrossEntropyLoss()
 
     # - Training loop
-    net = net.to(device)
+    model = model.to(device)
     loss_t = []
     acc_t = []
     best_acc = 0
@@ -108,17 +108,17 @@ def train(
         epoch_cum_loss = 0
 
         if adapt_network_epochs is not None and epoch % adapt_network_epochs == 0:
-            adapt_network(net.cpu())
-            net = net.to(device)
+            adapt_network(model.cpu())
+            model = model.to(device)
 
         for x_train_batch, y_train_batch in train_dl:
-            net.train()
+            model.train()
 
             # - Zero the optimiser gradients
             optimizer.zero_grad()
 
             # - Evolve the network with the current batch
-            output, _, _ = net(x_train_batch.to(device))
+            output, _, _ = model(x_train_batch.to(device))
 
             # - Get the prediction -- number of spike in each output channel
             pred = torch.sum(output, dim=1)
@@ -137,11 +137,11 @@ def train(
         loss_t.append(epoch_cum_loss / len(train_dl))
 
         # Evaluate model on validation dataset
-        acc = evaluate(net, val_dl)
+        acc = evaluate(model, val_dl)
         acc_t.append(float(acc))
         if acc > best_acc:
             save_lifnet_model_summary(
-                net,
+                model,
                 train_params,
                 acc,
                 get_nni_trial_path() if nni_mode else "best_model",
@@ -195,17 +195,17 @@ def train(
     logger.info(f"Training finished with accuracy: {best_acc}")
 
 
-def evaluate(net, dl):
+def evaluate(model, dl):
     """
     Evaluates the model using the provided data.
     Input Params:
       - dl: Evaluation DataLoader
-      - net: Model to be evaluated
+      - model: Model to be evaluated
     """
-    net.eval()
+    model.eval()
     ds = dl.dataset
     with torch.no_grad():
-        output, _, _ = net(ds.x.to(device))
+        output, _, _ = model(ds.x.to(device))
         pred = output.sum(dim=1).argmax(dim=1)
         return torch.mean(pred == ds.y.to(device), dtype=float)
 
@@ -255,7 +255,7 @@ if __name__ == "__main__":
 
     train_dl, val_dl, test_dl = load_data(**input_params)
 
-    net = build_network(
+    model = build_network(
         input_params["n_channels"],
         train_params["n_population"],
         len(input_params["enabled_classes"])
@@ -278,7 +278,7 @@ if __name__ == "__main__":
         input_params,
         train_dl,
         val_dl,
-        net,
+        model,
         num_epochs=args.epochs,
         lr=1e-3,
         lr_scheduler_fn=None,
