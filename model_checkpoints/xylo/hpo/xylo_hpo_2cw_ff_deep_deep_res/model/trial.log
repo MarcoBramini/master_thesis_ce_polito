@@ -1,6 +1,6 @@
 2023-10-28 14:37:36,758 - main - INFO - PyTorch is currently running on: cuda
 2023-10-28 14:37:36,762 - main - INFO - Initial parameters: {'n_population': 256, 'tau_mem': 0.049, 'tau_syn': 0.10200000000000001}
-2023-10-28 14:37:39,415 - main - INFO - Loaded 19798 events from file ../data/4bit_spikeset_PHASE_full.npy
+2023-10-28 14:37:39,415 - main - INFO - Loaded 19798 events from file ../data/wisdm_watch_full_40_encoded.npy
 2023-10-28 14:37:39,463 - main - INFO - Generated events partitions: train(11878), val(3960, test(3960))
 2023-10-28 14:37:39,497 - main - INFO - Built network: 
 TorchSequential  with shape (12, 2) {

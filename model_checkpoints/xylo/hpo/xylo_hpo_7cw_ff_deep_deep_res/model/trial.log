@@ -1,6 +1,6 @@
 2023-11-09 02:08:56,242 - main - INFO - PyTorch is currently running on: cuda
 2023-11-09 02:08:56,246 - main - INFO - Initial parameters: {'n_population': 256, 'tau_mem': 0.134, 'tau_syn': 0.109}
-2023-11-09 02:09:04,247 - main - INFO - Loaded 71947 events from file ../data/4bit_spikeset_PHASE_full.npy
+2023-11-09 02:09:04,247 - main - INFO - Loaded 71947 events from file ../data/wisdm_watch_full_40_encoded.npy
 2023-11-09 02:09:04,390 - main - INFO - Generated events partitions: train(43168), val(14389, test(14390))
 2023-11-09 02:09:04,445 - main - INFO - Built network: 
 TorchSequential  with shape (12, 7) {
@@ -51,7 +51,7 @@ TorchSequential  with shape (12, 7) {
 2023-11-09 02:33:26,729 - main - INFO - Dropped 144 output synapses each for 12 neurons in layer LinearTorch '0_LinearTorch' with shape (12, 256) (Rec:None)
 2023-11-12 12:51:39,728 - main - INFO - PyTorch is currently running on: cuda
 2023-11-12 12:51:39,732 - main - INFO - Initial parameters: {'n_population': 256, 'tau_mem': 0.191, 'tau_syn': 0.076}
-2023-11-12 12:51:47,783 - main - INFO - Loaded 71947 events from file ../data/4bit_spikeset_PHASE_full.npy
+2023-11-12 12:51:47,783 - main - INFO - Loaded 71947 events from file ../data/wisdm_watch_full_40_encoded.npy
 2023-11-12 12:51:47,928 - main - INFO - Generated events partitions: train(43168), val(14389, test(14390))
 2023-11-12 12:51:47,981 - main - INFO - Built network: 
 TorchSequential  with shape (12, 7) {

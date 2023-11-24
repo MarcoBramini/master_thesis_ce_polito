@@ -1,5 +1,5 @@
 2023-08-22 12:05:29,859 - main - INFO - Initial parameters: {'tau_mem': 0.17, 'tau_syn': 0.127}
-2023-08-22 12:05:33,840 - main - INFO - Loaded 30111 events from file ../data/4bit_spikeset_PHASE_full.npy
+2023-08-22 12:05:33,840 - main - INFO - Loaded 30111 events from file ../data/wisdm_watch_full_40_encoded.npy
 2023-08-22 12:05:34,092 - main - INFO - Generated events partitions: train(18066), val(6022, test(6023))
 2023-08-22 12:05:38,883 - main - INFO - Built network: 
 JaxSequential  with shape (12, 3) {
