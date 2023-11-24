@@ -14,7 +14,14 @@ from torch.utils.data import Dataset, DataLoader
 logger = logging.getLogger("main")
 
 
-def load_data_as_tsevents(file_path, n_channels, dt, sample_duration, sample_time_modifier=1, enabled_classes=None):
+def load_data_as_tsevents(
+    file_path,
+    n_channels,
+    dt,
+    sample_duration,
+    sample_time_modifier=1,
+    enabled_classes=None,
+):
     with open(file_path, "rb") as f:
         data = np.array(np.load(f, allow_pickle=True), dtype=object)
 
@@ -25,26 +32,29 @@ def load_data_as_tsevents(file_path, n_channels, dt, sample_duration, sample_tim
                 mask += data[:, 2] == c
             data = data[list(mask)]
 
-        tsevents = np.array([
-            TSEvent(
-                times=sample[1]*sample_time_modifier,
-                channels=sample[0],
-                t_start=0,
-                t_stop=sample_duration*sample_time_modifier,
-                num_channels=n_channels
-            ).raster(
-                dt,
-                t_start=0,
-                t_stop=sample_duration*sample_time_modifier,
-                add_events=True
-            )
-            for sample in data
-        ])
+        tsevents = np.array(
+            [
+                TSEvent(
+                    times=sample[1] * sample_time_modifier,
+                    channels=sample[0],
+                    t_start=0,
+                    t_stop=sample_duration * sample_time_modifier,
+                    num_channels=n_channels,
+                ).raster(
+                    dt,
+                    t_start=0,
+                    t_stop=sample_duration * sample_time_modifier,
+                    add_events=True,
+                )
+                for sample in data
+            ]
+        )
 
         labels = np.array(
             [
-                sample[2] if enabled_classes == None else enabled_classes.index(
-                    sample[2])
+                sample[2]
+                if enabled_classes == None
+                else enabled_classes.index(sample[2])
                 for sample in data
             ]
         )
@@ -61,16 +71,18 @@ def split_train_val_test(events, labels, partition_sizes=(0.6, 0.2, 0.2)):
         raise e
 
     x_train, x_val_test, y_train, y_val_test = train_test_split(
-        events, labels, train_size=partition_sizes[0], random_state=42)
+        events, labels, train_size=partition_sizes[0], random_state=42
+    )
 
-    relative_test_size = partition_sizes[2] / \
-        (partition_sizes[1]+partition_sizes[2])
+    relative_test_size = partition_sizes[2] / (partition_sizes[1] + partition_sizes[2])
 
     x_val, x_test, y_val, y_test = train_test_split(
-        x_val_test, y_val_test, test_size=relative_test_size, random_state=42)
+        x_val_test, y_val_test, test_size=relative_test_size, random_state=42
+    )
 
     logger.info(
-        f"Generated events partitions: train({len(x_train)}), val({len(x_val)}, test({len(x_test)}))")
+        f"Generated events partitions: train({len(x_train)}), val({len(x_val)}, test({len(x_test)}))"
+    )
 
     return x_train, x_val, x_test, y_train, y_val, y_test
 
@@ -87,22 +99,43 @@ class CustomDataset(Dataset):
 
 
 def convert_labels_one_hot(labels, n_classes, enabled_classes=None):
-    return torch.tensor([
-        [1 if label == i else 0 for i in range(
-            len(enabled_classes) if enabled_classes else n_classes)]
-        for label in labels
-    ])
+    return torch.tensor(
+        [
+            [
+                1 if label == i else 0
+                for i in range(len(enabled_classes) if enabled_classes else n_classes)
+            ]
+            for label in labels
+        ]
+    )
 
 
 # - Load input data
 
 
-def load_data(file_path, n_channels, n_classes, dt, sample_duration, batch_size=128, sample_time_modifier=1, enabled_classes=None, use_onehot_labels=False):
+def load_data(
+    file_path,
+    n_channels,
+    n_classes,
+    dt,
+    sample_duration,
+    batch_size=128,
+    sample_time_modifier=1,
+    enabled_classes=None,
+    use_onehot_labels=False,
+):
     events, labels = load_data_as_tsevents(
-        file_path, n_channels, dt, sample_duration, sample_time_modifier=sample_time_modifier, enabled_classes=enabled_classes)
+        file_path,
+        n_channels,
+        dt,
+        sample_duration,
+        sample_time_modifier=sample_time_modifier,
+        enabled_classes=enabled_classes,
+    )
 
     x_train, x_val, x_test, y_train, y_val, y_test = split_train_val_test(
-        events, labels)
+        events, labels
+    )
 
     train_ds = CustomDataset(torch.Tensor(x_train), torch.Tensor(y_train))
     val_ds = CustomDataset(torch.Tensor(x_val), torch.Tensor(y_val))
@@ -111,8 +144,7 @@ def load_data(file_path, n_channels, n_classes, dt, sample_duration, batch_size=
     def collate_fn(batch):
         x, y = tonic.collation.PadTensors(batch_first=True)(batch)
         if use_onehot_labels:
-            y = convert_labels_one_hot(
-                y, n_classes, enabled_classes=enabled_classes)
+            y = convert_labels_one_hot(y, n_classes, enabled_classes=enabled_classes)
         return x, y
 
     dataloader_kwargs = dict(

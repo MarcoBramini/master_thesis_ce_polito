@@ -3,7 +3,10 @@ from rockpool.nn.combinators import Sequential, Residual
 
 
 def get_rec_simple(
-    n_input_channels, n_population, n_output_channels, neuron_parameters
+    n_input_channels,
+    n_population,
+    n_output_channels,
+    neuron_parameters,
 ):
     return Sequential(
         LinearTorch((n_input_channels, n_population)),
@@ -45,7 +48,10 @@ def get_ff_deep(n_input_channels, n_population, n_output_channels, neuron_parame
 
 
 def get_ff_deep_res(
-    n_input_channels, n_population, n_output_channels, neuron_parameters
+    n_input_channels,
+    n_population,
+    n_output_channels,
+    neuron_parameters,
 ):
     return Sequential(
         LinearTorch((n_input_channels, n_population)),
@@ -60,7 +66,10 @@ def get_ff_deep_res(
 
 
 def get_ff_deep_deep_res(
-    n_input_channels, n_population, n_output_channels, neuron_parameters
+    n_input_channels,
+    n_population,
+    n_output_channels,
+    neuron_parameters,
 ):
     return Sequential(
         LinearTorch((n_input_channels, n_population)),
