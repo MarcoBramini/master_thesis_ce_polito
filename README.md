@@ -7,6 +7,21 @@ Thesis Link: TBD
 # How To Use
 ## Initialize Environment
 ### Create Conda Environment
+This project was specifically thought to work on Linux OS, having Conda installed.
+A fully comprehensive virtual environment can be installed on such OS using the following command:
+```conda env create -f=requirements.txt -n myenv```
+
+In case of different operating system, the user must manually build the virtual environment and install packages one by one:
+```
+conda create env -n myenv
+conda activate myenv
+conda install pip
+pip install “rockpool[all]”
+pip install nni
+pip install tonic
+pip install -U "jax[cuda12_pip]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+pip install ipykernel
+```
 
 ### Unpack dataset
 Use 7-Zip to unpack the multipart zip file.
