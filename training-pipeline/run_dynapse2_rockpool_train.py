@@ -336,7 +336,7 @@ if __name__ == "__main__":
         logger.info(f"Initial parameters: {train_params}")
 
     input_params = {
-        "file_path": "../data/4bit_spikeset_PHASE_full.npy",
+        "file_path": "../data/wisdm_watch_full_40_encoded.npy",
         "n_channels": 12,
         "n_classes": 7,
         "sample_duration": 2,
