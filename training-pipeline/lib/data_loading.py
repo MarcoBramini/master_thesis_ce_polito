@@ -124,6 +124,19 @@ def load_data(
     enabled_classes=None,
     use_onehot_labels=False,
 ):
+    """
+    Loads an encoded data file, splits it into training, validation and test subsets and returns a Torch DataLoader for each of them.
+    Input Params:
+      - file_path: Path for the data file
+      - n_channels: Number of the dataset's channels
+      - n_classes: Number of labels in the dataset
+      - dt: Duration of a timestep for the dataset
+      - sample_duration: Duration of a single sample in seconds
+      - batch_size: Size of a single batch of samples this function will output
+      - sample_time_modifier: Dilates/Compresses a single sample to adapt to a different dt
+      - enabled_classes: Filters the classes based on the indexes in this list
+      - use_onehot_labels: Controls if the labels must be one-hot encoded or integer indexes
+    """
     events, labels = load_data_as_tsevents(
         file_path,
         n_channels,

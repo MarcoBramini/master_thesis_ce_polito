@@ -15,6 +15,13 @@ logger = logging.getLogger("main")
 
 # Builds a network starting from a saved state
 def net_from_params(params, neuron_parameters={}):
+    """
+    Restores a model from its parameters, stored within its checkpoint files.
+    Only for Xylo.
+    Input Params:
+      - params: Parameters object associated to the model
+      - neuron_parameters: Neuron hyperparameters to use for the model
+    """
     layers = build_layers(params, neuron_parameters)
     return Sequential(*layers)
 
@@ -66,9 +73,15 @@ def build_layers(params, neuron_parameters={}):
 # ---------------
 
 
-# Adapts networks that contains neurons with an exceeding number of output synapses.
-# The n synapses with lightest weight are dropped to match the neuron fan out constraint (0:63).
 def adapt_network(net, max_synapses=63):
+    """
+    # Adapts a network that contains neurons with an exceeding number of output synapses.
+    # The n synapses with lightest weight are dropped to match the neuron fan out constraint (0:63).
+    # Only for Xylo
+    Input Params:
+      - net: Network to adapt
+      - max_synapses: Maximum number of output connections for each neuron
+    """
     return adapt_network_rec(net, max_synapses)
 
 
