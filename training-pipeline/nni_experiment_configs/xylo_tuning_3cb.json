@@ -1,7 +1,7 @@
 {
     "trial_command": "PYTHONPATH=\"lib\" python run_xylo_quantization_tuning.py --nni_mode True --model_path \"..\/models\/xylo_3cb_ff_deep_deep_res\"",
     "assessor_start_step": 300,
-    "max_trial_number": 500,
+    "max_trial_number": 1000,
     "search_space": {
         "global_activity_factor": {
             "_type": "quniform",
