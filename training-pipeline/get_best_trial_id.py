@@ -1,12 +1,10 @@
 import os
 import json
 
-experiment_id = "du6ejcys"
+EXPERIMENT_ID = "du6ejcys"
 
 if __name__ == "__main__":
-    # List all folder in path/experimentID
-    # Read metadata within them and get accuracy
-    experiment_path = f"experiment/{experiment_id}"
+    experiment_path = f"experiment/{EXPERIMENT_ID}"
 
     best_accuracy = 0
     best_trial_id = -1
@@ -15,7 +13,7 @@ if __name__ == "__main__":
         try:
             with open(trial_metadata_path) as f:
                 trial_metadata = json.load(f)
-                if trial_metadata["val_accuracy"] > best_accuracy and trial_metadata["params"]["n_population"] == 64:
+                if trial_metadata["val_accuracy"] > best_accuracy:
                     best_trial_id = trial_id
                     best_accuracy = trial_metadata["val_accuracy"]
         except:
