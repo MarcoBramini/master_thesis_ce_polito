@@ -2,7 +2,7 @@
 
 *M.Sc. Thesis Project*  
 Author: Marco Bramini  
-Thesis Link: TBD
+Thesis Link: [https://webthesis.biblio.polito.it/29384/](https://webthesis.biblio.polito.it/29384/)
 
 # How To Use
 ## Initialize Environment
